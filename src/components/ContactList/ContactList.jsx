@@ -1,28 +1,55 @@
-import PropTypes from 'prop-types';
-import { Li, Ul, Button, Name, Number } from './ContactList.styled';
+import {
+  Li,
+  Ul,
+  Button,
+  Name,
+  Number,
+  Input,
+  Label,
+} from './ContactList.styled';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { deleteContact } from '../../redux/listSlice';
+import { addFilter } from '../../redux/filterSlice';
 
-const ContactList = ({ contacts, removeContact }) => {
-  const elements = contacts.map(({ id, name, number }) => (
-    <Li key={id}>
-      <Name>{name} :</Name>
-      <Number>{number}</Number>
-      <Button type="button" onClick={() => removeContact(id)}>
-        Delete
-      </Button>
-    </Li>
-  ));
-  return <Ul>{elements}</Ul>;
-};
+export function ContactList() {
+  const contact = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
+  const dispatch = useDispatch();
 
-export default ContactList;
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  removeContact: PropTypes.func.isRequired,
-};
+  function delContact(submit) {
+    dispatch(deleteContact(submit.target.id));
+  }
+  const filteredContacts = contact.data.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+  return (
+    <div>
+      <Label>Find contacts by name</Label>
+      <Input
+        type="text"
+        name="filter"
+        placeholder="Сontact search ..."
+        onInput={event => {
+          dispatch(addFilter(event.target.value));
+        }}
+      />
+      <Ul>
+        {filteredContacts.map(contact => (
+          <Li key={contact.id}>
+            <Name>{contact.name}:</Name> <Number>{contact.number}</Number>
+            <Button
+              id={contact.id}
+              type="button"
+              onClick={submit => {
+                delContact(submit);
+              }}
+            >
+              Delete
+            </Button>
+          </Li>
+        ))}
+      </Ul>
+    </div>
+  );
+}
