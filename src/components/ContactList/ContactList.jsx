@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { deleteContact } from '../../redux/listSlice';
 import { addFilter } from '../../redux/filterSlice';
 
-export function ContactList() {
+const ContactList = () => {
   const contact = useSelector(state => state.contacts);
   const filter = useSelector(state => state.filter);
   const dispatch = useDispatch();
@@ -37,7 +37,8 @@ export function ContactList() {
       <Ul>
         {filteredContacts.map(contact => (
           <Li key={contact.id}>
-            <Name>{contact.name}:</Name> <Number>{contact.number}</Number>
+            <Name>{contact.name}:</Name>
+            <Number>{contact.number}</Number>
             <Button
               id={contact.id}
               type="button"
@@ -52,4 +53,6 @@ export function ContactList() {
       </Ul>
     </div>
   );
-}
+};
+
+export default ContactList;
